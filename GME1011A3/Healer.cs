@@ -17,7 +17,7 @@ namespace GME1011A3
             this.dexterity = 5;
         }
 
-        public Healer(int health, string name, int dexterity) : base(health, name) 
+        public Healer(int health, string name, int dexterity) : base(health, name)
         {
             if (this.health > 80)  //max the Healer at 80 health
             {
@@ -25,7 +25,7 @@ namespace GME1011A3
             }
 
             if (dexterity < 0 || dexterity > 10)  //if the argument came in less than 0 or more than 10
-                dexterity = 5; 
+                dexterity = 5;
 
             //Set the Healer's unique attribute
             this.dexterity = dexterity;
@@ -53,12 +53,12 @@ namespace GME1011A3
 
         //Specific method for the Healer
         //Max out at 10, just because
-        public void AddDexterity() { if(this.dexterity <= 9) dexterity++; }
+        public void AddDexterity() { if (this.dexterity <= 9) dexterity++; }
 
         //Special move for the Healer:
         public int HealPartyMember()
         {
-            if(dexterity > 0)
+            if (dexterity > 0)
             {
                 dexterity--;
                 Random rng = new Random();

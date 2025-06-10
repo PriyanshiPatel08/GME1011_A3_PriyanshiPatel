@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GME1011A3
 {
@@ -6,112 +7,129 @@ namespace GME1011A3
     {
         static void Main(string[] args)
         {
-
-            //Epic battle goes here :)
             Random rng = new Random();
 
-            Fighter hero = new Fighter(100, "Aaron", 5); //TODO: Get these arguments from the user - health, name, strength
-            Console.WriteLine("Here is our heroic hero: " + hero + "\n\n");
+            // 1. Get hero details from user
+            Console.Write("Enter your hero's name: ");
+            string heroName = Console.ReadLine();
 
+            Console.Write("Enter your hero's health (max 150): ");
+            int heroHealth = int.Parse(Console.ReadLine());
+            if (heroHealth <= 0 || heroHealth > 150) heroHealth = 100;
 
-            int numBaddies = 5; //TODO: Get number of baddies from the user
+            Console.Write("Enter your hero's strength (1–10): ");
+            int heroStrength = int.Parse(Console.ReadLine());
+            if (heroStrength < 1 || heroStrength > 10) heroStrength = 5;
+
+            Fighter hero = new Fighter(heroHealth, heroName, heroStrength);
+            Console.WriteLine("\nHere is our heroic hero: " + hero + "\n\n");
+
+            // 2. Get number of enemies
+            Console.Write("Enter number of enemies to fight (1–10): ");
+            int numBaddies = int.Parse(Console.ReadLine());
+            if (numBaddies <= 0 || numBaddies > 10) numBaddies = 5;
+
             int numAliveBaddies = numBaddies;
+            List<Minion> baddies = new List<Minion>();
 
-
-            //TODO: change this so that it can contain goblins and skellies! Just change the type of the list!!
-            List<Goblin> baddies = new List<Goblin>();
-
-
-
+            // 3. Create random mix of baddies
             for (int i = 0; i < numBaddies; i++)
             {
+                int type = rng.Next(4); // 0=Goblin, 1=Skellie, 2=Sneaky, 3=Archer
 
-
-                //TODO: each baddie should have 50% chance of being a goblin, 50% chance of
-                //being a skellie. A skellie should have random health between 25 and 30, and 0 armour (remember
-                //skellie armour is 0 anyway)
-                baddies.Add(new Goblin(rng.Next(30, 35), rng.Next(1, 5), rng.Next(1, 10)));
-            
-            
+                switch (type)
+                {
+                    case 0:
+                        baddies.Add(new Goblin(rng.Next(25, 36), rng.Next(1, 6), rng.Next(3, 11)));
+                        break;
+                    case 1:
+                        baddies.Add(new Skellie(rng.Next(25, 31), 0));
+                        break;
+                    case 2:
+                        baddies.Add(new SneakyMinion(rng.Next(20, 31), rng.Next(0, 3), rng.Next(5, 11)));
+                        break;
+                    case 3:
+                        baddies.Add(new Archer(rng.Next(22, 33), rng.Next(1, 4), rng.Next(1, 4)));
+                        break;
+                }
             }
 
-            //this should work even after you make the changes above
-            Console.WriteLine("Here are the baddies!!!");
-            for(int i = 0; i < baddies.Count; i++)
+            Console.WriteLine("\nHere are the baddies!!!");
+            for (int i = 0; i < baddies.Count; i++)
             {
-                Console.WriteLine(baddies[i]);
+                Console.WriteLine($"#{i + 1}: " + baddies[i]);
             }
-            Console.WriteLine("\n\n");
-            Console.WriteLine("Let the EPIC battle begin!!!");
+            Console.WriteLine("\nLet the EPIC battle begin!");
             Console.WriteLine("----------------------------");
 
-
-            //loop runs as long as there are baddies still alive and the hero is still alive!!
             while (numAliveBaddies > 0 && !hero.isDead())
             {
-                //figure out which enemy we are going to battle - the first one that isn't dead
                 int indexOfEnemy = 0;
                 while (baddies[indexOfEnemy].isDead())
-                {
                     indexOfEnemy++;
+
+                Minion currentEnemy = baddies[indexOfEnemy];
+                Console.WriteLine($"\n{hero.GetName()} attacks enemy #{indexOfEnemy + 1} ({currentEnemy.GetType().Name})");
+
+                // Hero attacks
+                int heroDamage;
+                if (rng.Next(100) < 33 && hero.CanUseSpecial())
+                {
+                    heroDamage = hero.SpecialAttack();
+                }
+                else
+                {
+                    if (!hero.CanUseSpecial())
+                        Console.WriteLine("(Not enough power for special. Using regular attack.)");
+                    heroDamage = hero.DealDamage();
                 }
 
-                //hero deals damage first
-                Console.WriteLine(hero.GetName() + " is attacking enemy #" + (indexOfEnemy+1) + " of " + numBaddies + ". Eek, it's a " + baddies[indexOfEnemy].GetType().Name);
-                int heroDamage = hero.DealDamage();  //how much damage?
-                Console.WriteLine("Hero deals " + heroDamage + " heroic damage."); 
-                baddies[indexOfEnemy].TakeDamage(heroDamage); //baddie takes the damage
+                Console.WriteLine($"{hero.GetName()} deals {heroDamage} damage!");
+                currentEnemy.TakeDamage(heroDamage);
 
-
-
-
-                //TODO: The hero doesn't ever use their special attack - but they should. Change the above to 
-                //have a 33% chance that the hero uses their special, and 67% that they use their regular attack.
-                //If the hero doesn't have enough special power to use their special attack, they do their regular 
-                //attack instead - but make a note of it in the output. There's no way for the hero to get more special
-                //power points, but if you want to craft a way for that to happen, that's fine.
-
-
-
-
-                //NOTE to coders - armour affects how much damage goblins take, and skellies take
-                //half damage - remember that when reviewing the output
-
-                //did we vanquish the baddie we were battling?
-                if (baddies[indexOfEnemy].isDead())
+                if (currentEnemy.isDead())
                 {
-                    numAliveBaddies--; //one less baddie to worry about.
-                    Console.WriteLine("Enemy #" + (indexOfEnemy+1) + " has been dispatched to void.");
+                    numAliveBaddies--;
+                    Console.WriteLine($"Enemy #{indexOfEnemy + 1} has been defeated!");
                 }
-                else //baddie survived, now attacks the hero
+                else
                 {
-                    int baddieDamage = baddies[indexOfEnemy].DealDamage();  //how much damage?
-                    Console.WriteLine("Enemy #" + (indexOfEnemy+1) + " deals " + baddieDamage + " damage!");
-                    hero.TakeDamage(baddieDamage); //hero takes damage
-
-
-
-
-                    //TODO: The baddie doesn't ever use their special attack - but they should. Change the above to 
-                    //have a 33% chance that the baddie uses their special, and 67% that they use their regular attack.
-                    
-
-
-
-                    //let's look in on our hero.
-                    Console.WriteLine(hero.GetName() + " has " + hero.GetHealth() + " health remaining.");
-                    if (hero.isDead()) //did the hero die
+                    // Enemy attacks back
+                    int baddieDamage;
+                    if (rng.Next(100) < 33)
                     {
-                        Console.WriteLine(hero.GetName() + " has died. All hope is lost.");
+                        // Use special attack if available
+                        if (currentEnemy is Goblin g)
+                            baddieDamage = g.GoblinBite();
+                        else if (currentEnemy is Skellie s)
+                            baddieDamage = s.SkellieRattle();
+                        else if (currentEnemy is SneakyMinion sm)
+                            baddieDamage = sm.SneakyStab();
+                        else if (currentEnemy is Archer a)
+                            baddieDamage = a.ArrowShot();
+                        else
+                            baddieDamage = currentEnemy.DealDamage();
+                    }
+                    else
+                    {
+                        baddieDamage = currentEnemy.DealDamage();
                     }
 
+                    Console.WriteLine($"Enemy #{indexOfEnemy + 1} deals {baddieDamage} damage!");
+                    hero.TakeDamage(baddieDamage);
+                    Console.WriteLine($"{hero.GetName()} has {hero.GetHealth()} HP remaining.");
+
+                    if (hero.isDead())
+                    {
+                        Console.WriteLine($"\n{hero.GetName()} has fallen. The world is doomed.");
+                    }
                 }
+
                 Console.WriteLine("-----------------------------------------");
             }
-            //if we made it this far, the hero is victorious! (that's what the message says.
-            if(!hero.isDead())
-                Console.WriteLine("\nAll enemies have been dispatched!! " + hero.GetName() + " is victorious!");
-        }
 
+            if (!hero.isDead())
+                Console.WriteLine($"\nAll enemies have been defeated!! {hero.GetName()} is victorious!");
+        }
     }
 }

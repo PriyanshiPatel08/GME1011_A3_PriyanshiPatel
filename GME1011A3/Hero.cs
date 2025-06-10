@@ -24,28 +24,28 @@ namespace GME1011A3
         {
             if (health < 0 || health > 100) { health = 100; }
             this.health = health;
-            if(name == "") { name = "unnamed hero"; }
+            if (name == "") { name = "unnamed hero"; }
             this.name = name;
         }
 
         //simple accessors
         public int GetHealth() { return health; }
-        public string GetName() { return name; }    
+        public string GetName() { return name; }
 
         //helper method (doesn't interact with attributes)
         public virtual int DealDamage() { return 10; }
 
         //mutators (Heal and TakeDamage affect health)
-        public virtual void Heal(int health) 
-        { 
-            this.health += health; 
-            if(this.health > 100) this.health = 100;
+        public virtual void Heal(int health)
+        {
+            this.health += health;
+            if (this.health > 100) this.health = 100;
         }
 
-        public void TakeDamage(int damage) 
-        { 
+        public void TakeDamage(int damage)
+        {
             this.health -= damage;
-            if(this.health < 0) { this.health = 0; }
+            if (this.health < 0) { this.health = 0; }
         }
 
         //Is our hero dead? Check to see if health < 0 - this will be a true/false statement
@@ -54,7 +54,7 @@ namespace GME1011A3
         //Handy-dandy ToString for debugging
         public override String ToString()
         {
-            return "Hero[" + health + ", " + name + "]";    
+            return "Hero[" + health + ", " + name + "]";
         }
 
     }

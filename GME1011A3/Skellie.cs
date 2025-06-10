@@ -1,43 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GME1011A3
 {
     internal class Skellie : Minion
     {
-        //Constructor - Skellies don't have armour, set it to 0
-        public Skellie(int health, int armour) : base(health, armour)
+        // Constructor - Skellies always have 0 armour
+        public Skellie(int health) : base(health, 0)
         {
-            _armour = 0;
+            this.armour = 0;
         }
 
-        //skellies take half damage - because they are skellies
+        // Skellies take half damage
         public override void TakeDamage(int damage)
         {
-            _health -= damage / 2;
+            int halfDamage = damage / 2;
+            if (halfDamage < 0) halfDamage = 0;
+            health -= halfDamage;
         }
 
-        //Skelles do 2-8 damage by default
+        // Skellies do 2–8 damage
         public override int DealDamage()
         {
             Random rng = new Random();
-            return rng.Next(2, 8);
+            return rng.Next(2, 9); // upper bound is exclusive
         }
 
-        //Skellie special.
+        // Special move: spooky rattling
         public int SkellieRattle()
         {
-            Console.WriteLine("**spooky rattling**");
+            Console.WriteLine("**Spooky rattling echoes across the battlefield...**");
             Random rng = new Random();
-            return rng.Next(7, 15);
+            return rng.Next(7, 15); // 7 to 14 inclusive
         }
 
         public override string ToString()
         {
-            return "Skellie[" + base.ToString() + "]";
-        }
-    }
-}
