@@ -9,33 +9,27 @@ namespace GME1011A3
 
         public Minion(int health, int armour)
         {
-            if (health <= 0 || health > 35)
-                health = 35;
+            if (health <= 0 || health > 35) health = 35;
             this.health = health;
-
-            if (armour < 0 || armour > 5)
-                armour = 3;
+            if (armour < 0 || armour > 5) armour = 3;
             this.armour = armour;
         }
 
-        public int GetHealth() { return health; }
-        public int GetArmour() { return armour; }
+        public int GetHealth() => health;
+        public int GetArmour() => armour;
 
         public virtual void TakeDamage(int damage)
         {
-            int actualDamage = damage - armour;
-            if (actualDamage < 0) actualDamage = 0;
-            health -= actualDamage;
+            int actual = damage - armour;
+            if (actual < 0) actual = 0;
+            health -= actual;
         }
 
         public abstract int DealDamage();
 
-        public bool isDead() { return health <= 0; }
+        public bool isDead() => health <= 0;
 
-        public override string ToString()
-        {
-            return "Minion[" + health + ", " + armour + "]";
-        }
+        public override string ToString() =>
+            $"Minion[{health}, {armour}]";
     }
 }
-s
